@@ -22,18 +22,23 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 public class Client {
 	public static volatile MqttClient mqttClient;
 	public static volatile MqttConnectOptions mqttConnectOptions;
+	public static volatile String broker = PropertyUtil.property.get("iothub.mqtt.broke");
+	public static volatile String userName = PropertyUtil.property.get("iothub.mqtt.username");
+	public static volatile String passWord = PropertyUtil.property.get("iothub.mqtt.password");
+	public static volatile String TOPIC = PropertyUtil.property.get("iothub.mqtt.topic");
+	public static volatile String Qos = PropertyUtil.property.get("iothub.mqtt.Qos");
 
 	public void run() {
 		mqttConnectOptions = new MqttConnectOptions();
 		mqttConnectOptions.setCleanSession(true);
-		mqttConnectOptions.setUserName("s05vj98/xuzh");
-		mqttConnectOptions.setPassword("F77GLqQmFBUautTf".toCharArray());
-		String randomStr = "test_sub_" + Common.getRandomStr(30);
+		mqttConnectOptions.setUserName(userName);
+		mqttConnectOptions.setPassword(passWord.toCharArray());
+		String randomStr = TOPIC + "_sub_" + Common.getRandomStr(30);
 		try {
-			mqttClient = new MqttClient("tcp://s05vj98.mqtt.iot.bj.baidubce.com:1883", randomStr);
+			mqttClient = new MqttClient(broker, randomStr);
 			mqttClient.connect(mqttConnectOptions);
-			int Qos = Integer.parseInt("0");
-			mqttClient.subscribe("test", Qos);
+			int qos = Integer.parseInt(Qos);
+			mqttClient.subscribe("test", qos);
 			mqttClient.setCallback(new PushCallback());
 		} catch (MqttException e) {
 			// TODO Auto-generated catch block
